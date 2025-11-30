@@ -1,0 +1,39 @@
+name: DM聊天室自動加密儲存
+on:
+  repository_dispatch:
+    types: [chat-update]
+
+jobs:
+  save:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 加密寫入 record.json
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/datemode/datemode.github.io/main/record.json -o record.json || echo "{}" > record.json
+          python3 -c "
+import json, base64, hashlib
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+
+key = '${{ secrets.ENCRYPT_KEY }}'.encode()
+key = hashlib.sha256(key).digest()
+
+msg = '''${{ github.event.client_payload.msg }}'''
+cipher = AES.new(key, AES.MODE_CBC)
+iv = cipher.iv
+encrypted = base64.b64encode(iv + cipher.encrypt(pad(msg.encode(), 16))).decode()
+
+room = '${{ github.event.client_payload.room }}'
+data = json.load(open('record.json'))
+if room not in data: data[room] = []
+data[room].append({'n': json.loads(msg)['n'], 't': encrypted, 'i': json.loads(msg)['i']})
+if len(data[room]) > 600: data[room] = data[room][-600:]
+json.dump(data, open('record.json','w'), ensure_ascii=False, indent=2)
+"
+          git config user.name "DM-Bot"
+          git add record.json
+          git commit -m "new msg" || exit 0
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
