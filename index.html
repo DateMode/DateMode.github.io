@@ -6,94 +6,101 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  :root{--p:#9f7aea;--bg:#0f172a;--c:#1e293b;--t:#e2e8f0;}
-  body{font-family:'Microsoft JhengHei',sans-serif;background:var(--bg);color:var(--t);margin:0;height:100vh;display:flex;align-items:center;justify-content:center;}
-  .box{background:var(--c);padding:2.5rem;border-radius:20px;box-shadow:0 25px 60px rgba(0,0,0,.6);width:92%;max-width:460px;border:1px solid #4c1d95;}
-  h1{color:var(--p);text-align:center;margin-bottom:1rem;text-shadow:0 0 15px var(--p);}
-  input,button{width:100%;padding:15px;margin:12px 0;border-radius:15px;border:none;font-size:1.1rem;background:#334155;color:white;}
-  button{background:var(--p);font-weight:bold;cursor:pointer;}
-  button:hover{background:#7c3aed;transform:scale(1.03);}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:20px;}
-  .hidden{display:none;}
-  #chat{height:96vh;max-width:900px;display:flex;flex-direction:column;}
-  #msg{flex:1;overflow-y:auto;padding:20px;background:#0f172a;border-radius:18px;}
-  .m{margin:15px 0;max-width:85%;word-wrap:break-word;}
-  .me{align-self:flex-end;text-align:right;}
-  .me .b{background:var(--p);color:#000;}
-  .b{display:inline-block;padding:14px 20px;border-radius:22px;box-shadow:0 3px 10px rgba(0,0,0,.4);}
-  .t{font-size:0.8rem;color:#94a3b8;margin-top:5px;}
-  .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.97);display:flex;align-items:center;justify-content:center;z-index:999;}
-  .mb{background:#1a1033;padding:2rem;border-radius:20px;border:2px solid var(--p);max-width:90%;max-height:90%;overflow-y:auto;color:var(--t);}
+  :root{--p:#a78bfa;--bg:#0f172a;--c:#1e293b;--t:#e2e8f0;--s:#334155;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Microsoft JhengHei',sans-serif;background:var(--bg);color:var(--t);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+  header{background:var(--c);padding:1rem;text-align:center;border-bottom:1px solid #333;box-shadow:0 4px 20px rgba(0,0,0,.5);}
+  h1{color:var(--p);font-size:1.6rem;}
+  #messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:12px;background:linear-gradient(#0f172a,#1a1033);}
+  .msg{max-width:78%;word-wrap:break-word;position:relative;}
+  .msg.own{align-self:flex-end;}
+  .bubble{background:var(--s);padding:12px 18px;border-radius:20px;box-shadow:0 3px 12px rgba(0,0,0,.4);position:relative;}
+  .msg.own .bubble{background:var(--p);color:#000;border-bottom-right-radius:4px;}
+  .msg.other .bubble{border-bottom-left-radius:4px;}
+  .info{font-size:0.8rem;color:#94a3b8;margin-top:6px;text-align:right;}
+  .info span{color:#c084fc;}
+  footer{background:var(--c);padding:1rem;border-top:1px solid #333;}
+  textarea{width:100%;min-height:60px;max-height:150px;padding:15px;border-radius:20px;background:#334155;color:white;border:none;resize:none;font-size:1.1rem;}
+  textarea:focus{outline:none;background:#475569;}
+  button{background:var(--p);border:none;width:60px;height:60px;border-radius:50%;color:#000;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 15px rgba(167,139,250,.4);}
+  .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.98);display:flex;align-items:center;justify-content:center;z-index:999;}
+  .mb{background:#1a1033;padding:2.5rem;border-radius:20px;border:2px solid var(--p);max-width:90%;color:var(--t);line-height:1.9;}
+  .hidden{display:none !important;}
 </style>
 </head>
 <body>
 
-<!-- 18禁合約彈窗 -->
+<!-- 18禁合約 -->
 <div class="modal">
   <div class="mb">
-    <h2 style="color:#ff3366;text-align:center;">DM聊天室 使用條款（18禁）</h2>
-    <div style="line-height:2;font-size:1.05rem;">
-      <p>歡迎來到 <strong>DM聊天室｜DateMode</strong></p>
-      <p>進入即代表您已閱讀並同意：</p>
+    <h2 style="color:#ff3366;text-align:center;margin-bottom:1rem;">DM聊天室 使用條款（滿18歲）</h2>
+    <div style="font-size:1.05rem;">
+      <p>歡迎使用 <strong>DM聊天室｜DateMode</strong></p>
       <ul>
         <li>本平台僅限 <strong>滿18歲</strong> 成年人士使用</li>
-        <li>嚴禁任何金錢交易、援交、約砲廣告</li>
+        <li>嚴禁援交、金錢交易、約砲廣告</li>
         <li>禁止散布兒童色情、暴力、違法內容</li>
-        <li>禁止騷擾、恐嚇、人身攻擊</li>
-        <li>禁止公開個資或誘導私下交易</li>
-        <li>一切言論與行為由使用者自行負責，本站不負法律責任</li>
+        <li>禁止騷擾、人身攻擊、公開個資</li>
+        <li>一切言論由使用者自行負責，本站不負法律責任</li>
       </ul>
-      <p style="color:#ff6b6b;font-weight:bold;">
-        若您未滿18歲或不同意，請立即離開。<br>
-        點擊「同意並進入」即表示您已滿18歲並完全接受以上條款。
-      </p>
+      <p style="color:#ff6b6b;font-weight:bold;">按下同意即表示您已滿18歲並完全接受以上條款</p>
     </div>
-    <button onclick="document.querySelector('.modal').remove();document.getElementById('main').classList.remove('hidden')" style="background:#10b981;">我已滿18歲，同意並進入</button>
-    <button onclick="location.href='https://www.google.com'" style="background:#ef4444;margin-top:10px;">我未滿18歲，立即離開</button>
+    <button onclick="document.querySelector('.modal').remove();showLogin()" style="background:#10b981;width:100%;padding:15px;margin-top:20px;border-radius:15px;">我已滿18歲，同意並進入</button>
+    <button onclick="location.href='https://google.com'" style="background:#ef444;width:100%;padding:15px;margin-top:10px;border-radius:15px;">未滿18歲，立即離開</button>
   </div>
 </div>
 
-<div id="main" class="hidden">
-  <div class="box">
-    <h1>DM聊天室｜DateMode</h1>
-    <p style="text-align:center;color:#94a3b8;margin:10px 0;">台灣最安全匿名交友平台</p>
-    <input type="text" id="nick" placeholder="輸入暱稱（最多10字）" maxlength="10">
-    <div class="grid">
-      <button onclick="go('public')">多人聯誼</button>
-      <button onclick="go('gay')">男同志</button>
-      <button onclick="go('lesbian')">女同志</button>
-      <button onclick="go('taiwan')">台灣縣市</button>
-    </div>
+<div id="login" class="hidden" style="padding:2rem;text-align:center;">
+  <h1>DM聊天室｜DateMode</h1>
+  <p style="color:#94a3b8;margin:1rem 0;">台灣最安全匿名交友平台</p>
+  <input type="text" id="nick" placeholder="輸入暱稱（最多10字）" maxlength="10" style="text-align:center;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:30px;">
+    <button onclick="enter('public')">多人聯誼</button>
+    <button onclick="enter('gay')">男同志</button>
+    <button onclick="enter('lesbian')">女同志</button>
+    <button onclick="enter('taiwan')">台灣縣市</button>
   </div>
 </div>
 
-<div id="chat" class="hidden"></div>
+<header id="header" class="hidden">
+  <h1 id="roomName">聊天室</h1>
+</header>
+<main id="messages"></main>
+<footer id="footer" class="hidden">
+  <div style="display:flex;align-items:end;gap:12px;">
+    <textarea id="input" placeholder="說點什麼…（Enter送出）"></textarea>
+    <button onclick="send()">Send</button>
+  </div>
+</footer>
 
 <script>
-let room="", nick="";
+let room="", nick="", ip="", city="未知地區";
 
-function go(r){
+// 取得 IP 與縣市（精準到台灣）
+async function getIP() {
+  try {
+    const r = await fetch("https://api.ipify.org?format=json");
+    ip = (await r.json()).ip;
+    const r2 = await fetch(`https://ipapi.co/${ip}/json/`);
+    const d = await r2.json();
+    city = d.country_name === "Taiwan" ? (d.region || "台灣某地") : "國外";
+  } catch(e=>{city="未知地區"})
+}
+
+// 登入畫面
+function showLogin(){
+  getIP().then(()=>document.getElementById("login").classList.remove("hidden"));
+}
+
+function enter(r){
   nick = document.getElementById("nick").value.trim() || "匿名";
   if(nick.length>10) return alert("暱稱最多10字");
   room = r;
   localStorage.setItem("dm_nick",nick);
-  document.getElementById("main").classList.add("hidden");
-  document.getElementById("chat").classList.remove("hidden");
-  initChat();
-}
-
-function initChat(){
-  document.getElementById("chat").innerHTML = `
-    <div class="box" style="height:95vh;max-width:900px;display:flex;flex-direction:column;">
-      <h2 style="text-align:center;color:var(--p);margin:20px 0;">
-        ${room==='public'?'多人聯誼房':room==='gay'?'男同志專區':room==='lesbian'?'女同志專區':'全台縣市房'}　<span id="on">0</span>人
-      </h2>
-      <div id="msg"></div>
-      <div style="display:flex;margin:15px 0;">
-        <textarea id="input" placeholder="說點什麼…（Enter送出）" style="flex:1;height:90px;border-radius:18px;padding:18px;"></textarea>
-        <button onclick="send()" style="width:90px;margin-left:12px;">送出</button>
-      </div>
-    </div>`;
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("header").classList.remove("hidden");
+  document.getElementById("footer").classList.remove("hidden");
+  document.getElementById("roomName").textContent = {public:"多人聯誼房",gay:"男同志專區",lesbian:"女同志專區",taiwan:"全台縣市房"}[r];
   load();
   setInterval(load,4000);
 }
@@ -103,20 +110,25 @@ async function load(){
     const r = await fetch("record.json?t="+Date.now());
     const d = await r.json();
     const list = (d[room]||[]).map(m=>`
-      <div class="m ${m.n===nick?'me':''}">
-        <div class="b">${m.t.replace(/\n/g,'<br>')}</div>
-        <div class="t">${m.n} · ${m.i}</div>
+      <div class="msg ${m.n===nick?'own':''}">
+        <div class="bubble">${m.t.replace(/\n/g,'<br>')}</div>
+        <div class="info">${m.n} <span>${m.c}</span> · ${m.i}</div>
       </div>`).join("");
-    document.getElementById("msg").innerHTML = list;
-    document.getElementById("msg").scrollTop = 1e9;
-    document.getElementById("on").textContent = new Set((d[room]||[]).map(x=>x.n)).size;
+    document.getElementById("messages").innerHTML = list;
+    document.getElementById("messages").scrollTop = 1e9;
   }catch(e){}
 }
 
 async function send(){
   const t = document.getElementById("input").value.trim();
   if(!t) return;
-  const msg = JSON.stringify({n:nick, t, i:new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})});
+  const msg = JSON.stringify({
+    n: nick,
+    t: t,
+    i: new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}),
+    c: city,
+    p: ip.slice(-4) // 只記錄IP後四碼，避免隱私問題
+  });
   
   await fetch("https://api.github.com/repos/datemode/datemode.github.io/dispatches",{
     method:"POST",
@@ -130,8 +142,10 @@ async function send(){
   setTimeout(load,800);
 }
 
-// Enter 送出 + 記住暱稱
-document.addEventListener("keydown",e=>{if(e.key==="Enter"&& !e.shiftKey && document.getElementById("input")){e.preventDefault();send()}});
+// Enter 送出
+document.addEventListener("keydown",e=>{if(e.key==="Enter" && !e.shiftKey && document.getElementById("input")){e.preventDefault();send()}});
+
+// 記住暱稱
 if(localStorage.dm_nick) document.getElementById("nick").value = localStorage.dm_nick;
 </script>
 </body>
