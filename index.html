@@ -2,244 +2,135 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<title>台灣最大聊天室平台</title>
+<title>DM聊天室｜DateMode</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 <style>
-  :root {
-    --primary: #8b5cf6;
-    --bg: #0f172a;
-    --card: #1e293b;
-    --text: #e2e8f0;
-  }
-  body { 
-    font-family: 'Microsoft JhengHei', sans-serif; 
-    background: linear-gradient(135deg, #1e1b4b, #0f172a); 
-    color: var(--text); 
-    margin:0; height:100vh; 
-    display:flex; align-items:center; justify-content:center;
-  }
-  .container { 
-    background:var(--card); padding:2rem; border-radius:20px; 
-    box-shadow:0 20px 50px rgba(0,0,0,0.5); width:90%; max-width:420px;
-  }
-  h1 { text-align:center; color:var(--primary); margin-bottom:1.5rem; }
-  input, select, button {
-    width:100%; padding:12px; margin:10px 0; border-radius:12px; border:none;
-    font-size:1rem;
-  }
-  input, select { background:#334155; color:white; }
-  button { 
-    background:var(--primary); color:white; font-weight:bold; 
-    cursor:pointer; transition:0.3s; margin-top:20px;
-  }
-  button:hover { background:#7c3aed; transform:translateY(-3px); }
-  .room-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
-  .hidden { display:none; }
-  .online { text-align:center; color:#94a3b8; font-size:0.9rem; margin-top:15px; }
+  :root{--p:#ff3366;--bg:#000;--card:#111;}
+  body{font-family:'Microsoft JhengHei',sans-serif;background:var(--bg);color:#fff;margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,#220022,#000);}
+  .box{background:var(--card);border:2px solid var(--p);padding:2.5rem;border-radius:20px;width:92%;max-width:460px;box-shadow:0 0 40px var(--p);}
+  h1{color:var(--p);text-align:center;text-shadow:0 0 20px var(--p);}
+  input,button,textarea{width:100%;padding:14px;margin:10px 0;border-radius:12px;border:1px solid var(--p);background:var(--bg);color:#fff;font-size:1.1rem;}
+  button{background:var(--p);color:#000;font-weight:bold;cursor:pointer;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .hidden{display:none;}
+  #chat{height:96vh;max-width:900px;display:flex;flex-direction:column;}
+  #msg{flex:1;overflow-y:auto;background:#000;padding:20px;border-radius:15px;margin:10px 0;}
+  .me{text-align:right;}
+  .me div{background:var(--p);color:#000;display:inline-block;padding:12px 20px;border-radius:20px;max-width:80%;word-break:break-all;}
+  .other div{background:#333;color:#fff;display:inline-block;padding:12px 20px;border-radius:20px;max-width:80%;word-break:break-all;}
 </style>
 </head>
 <body>
 
-<div class="container" id="loginBox">
-  <h1><i class="fas fa-heart"></i> 台灣最大聊天室</h1>
-  <p style="text-align:center;color:#94a3b8;">請先輸入暱稱才能進入喔～</p>
-  
-  <input type="text" id="nickname" placeholder="暱稱（最多20個字）" maxlength="20">
-  <div style="font-size:0.9rem;color:#f87171;text-align:center;" id="nameError"></div>
-  
-  <hr style="margin:20px 0; border-color:#334155;">
-  <p style="text-align:center;">選擇聊天室</p>
-  
-  <div class="room-grid">
-    <button onclick="enterRoom('public')">多人聯誼</button>
-    <button onclick="enterRoom('gay')">男同志</button>
-    <button onclick="enterRoom('lesbian')">女同志</button>
-    <button onclick="showCities()">台灣縣市</button>
+<div class="box" id="login">
+  <h1>DM聊天室｜DateMode</h1>
+  <input type="password" id="decryptPass" placeholder="輸入解密密碼才能看歷史訊息" autocomplete="off">
+  <input type="text" id="nick" placeholder="暱稱（最多10字）" maxlength="10">
+  <div class="grid">
+    <button onclick="enter('public')">多人聯誼</button>
+    <button onclick="enter('gay')">男同志</button>
+    <button onclick="enter('lesbian')">女同志</button>
+    <button onclick="enter('taiwan')">全台縣市</button>
   </div>
-
-  <select id="citySelect" class="hidden"></select>
-  <button id="enterCityBtn" class="hidden" onclick="enterCityRoom()">進入縣市聊天室</button>
 </div>
 
-<!-- 這裡會動態載入聊天室畫面 -->
-<div id="chatApp" class="hidden"></div>
+<div class="box hidden" id="chat">
+  <h2 id="title" style="text-align:center;color:var(--p);"></h2>
+  <div id="msg"></div>
+  <div style="display:flex;">
+    <textarea id="input" placeholder="輸入訊息…（Enter送出）" style="height:100px;"></textarea>
+    <button onclick="send()">送出</button>
+  </div>
+</div>
 
 <script>
-// ==== 你的 GitHub 資訊（改成你自己的）====
-const GITHUB_REPO = "https://datemode.github.io/"; // 例如：sql-tech/taiwan-chat
-const GITHUB_TOKEN = "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"; // 只需要 repo 權限即可
-const FILE_PATH = "record.json;
+let room = "", nick = "";
+window.DECRYPT_KEY = "";
 
-// ==== 台灣縣市列表 ====
-const cities = ["台北市","新北市","桃園市","台中市","台南市","高雄市","基隆市","新竹市","嘉義市",
-  "新竹縣","苗栗縣","彰化縣","南投縣","雲林縣","嘉義縣","屏東縣","宜蘭縣","花蓮縣","台東縣",
-  "澎湖縣","金門縣","連江縣"];
+function enter(r){
+  const pass = document.getElementById("decryptPass").value.trim();
+  if(!pass) return alert("請輸入解密密碼！");
+  nick = document.getElementById("nick").value.trim() || "匿名";
+  if(nick.length > 10) return alert("暱稱最多10字");
 
-// ==== 檢查暱稱 ====
-function validateNickname(name) {
-  if (!name.trim()) return "暱稱不能空白";
-  if (/[^\u4e00-\u9fa5a-zA-Z0-9]/.test(name)) return "只能用中文、英文、數字";
-  if (name.length > 20) return "最多20個字";
-  return "";
+  room = r;
+  window.DECRYPT_KEY = pass; // 存在記憶體，不寫進任何地方
+
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("chat").classList.remove("hidden");
+  document.getElementById("title").innerHTML = {
+    public:"多人聯誼房", gay:"男同志專區", lesbian:"女同志專區", taiwan:"全台縣市房"
+  }[r] + "　<span id='online'>0</span>人線上";
+
+  load();
+  setInterval(load, 4000);
 }
 
-// ==== 進入一般聊天室 ====
-function enterRoom(room) {
-  const nick = document.getElementById("nickname").value.trim();
-  const err = validateNickname(nick);
-  if (err) {
-    document.getElementById("nameError").textContent = err;
-    return;
-  }
-  document.getElementById("nameError").textContent = "";
-  localStorage.setItem("chat_nickname", nick);
-  loadChatInterface(room, nick);
-}
-
-// ==== 顯示縣市選單 ====
-function showCities() {
-  const select = document.getElementById("citySelect");
-  select.innerHTML = cities.map(c => `<option>${c}</option>`).join("");
-  select.classList.remove("hidden");
-  document.getElementById("enterCityBtn").classList.remove("hidden");
-}
-
-// ==== 進入縣市聊天室 ====
-function enterCityRoom() {
-  const city = document.getElementById("citySelect").value;
-  const nick = document.getElementById("nickname").value.trim();
-  const err = validateNickname(nick);
-  if (err) { document.getElementById("nameError").textContent = err; return; }
-  localStorage.setItem("chat_nickname", nick);
-  loadChatInterface("city_"+city, nick);
-}
-
-// ==== 主聊天室介面 ====
-function loadChatInterface(roomId, nickname) {
-  document.getElementById("loginBox").classList.add("hidden");
-  
-  const html = `
-    <div class="container" style="height:95vh;max-width:800px;display:flex;flex-direction:column;">
-      <h2 style="text-align:center;">${getRoomName(roomId)}　<span id="onlineCount">0</span> 人上線</h2>
-      <div id="messages" style="flex:1;overflow-y:auto;padding:10px;background:#0f172a;border-radius:15px;"></div>
-      <div style="display:flex;margin-top:10px;">
-        <textarea id="msgInput" placeholder="說點什麼…" style="flex:1;border-radius:12px;"></textarea>
-        <button onclick="sendMessage()" style="width:70px;margin-left:8px;">送出</button>
-      </div>
-    </div>`;
-  
-  const app = document.getElementById("chatApp");
-  app.innerHTML = html;
-  app.classList.remove("hidden");
-
-  window.currentRoom = roomId;
-  window.nickname = nickname;
-  
-  loadMessages();
-  setInterval(loadMessages, 3000); // 每3秒更新一次
-}
-
-// 房間中文名稱
-function getRoomName(id) {
-  const map = {
-    public: "多人聯誼聊天室",
-    gay: "男同志聊天室",
-    lesbian: "女同志聊天室"
-  };
-  if (id.startsWith("city_")) return id.replace("city_","") + "聊天室";
-  return map[id] || id;
-}
-
-// ==== 讀取訊息 ====
-async function loadMessages() {
-  try {
-    const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${FILE_PATH}`);
+async function load(){
+  try{
+    const res = await fetch("record.json?t="+Date.now());
     const data = await res.json();
-    const content = JSON.parse(atob(data.content));
-    
-    const roomMsgs = content[window.currentRoom] || [];
-    const box = document.getElementById("messages");
-    box.innerHTML = roomMsgs.map(m => `
-      <div style="margin:8px 0;${m.nick===window.nickname?'text-align:right;':''}">
-        <div style="font-size:0.8rem;color:#94a3b8;">${m.nick}　${m.time}</div>
-        <div style="display:inline-block;background:${m.nick===window.nickname?'#8b5cf6':'#334155'};padding:10px 15px;border-radius:18px;max-width:80%;word-wrap:break-word;">
-          ${m.text.replace(/\n/g,'<br>')}
-        </div>
-      </div>`).join("");
-    
-    box.scrollTop = box.scrollHeight;
-    document.getElementById("onlineCount").textContent = new Set(roomMsgs.map(m=>m.nick)).size;
-  } catch(e) {
-    console.log("載入失敗，可能是第一次使用");
-  }
+    const msgs = data[room] || [];
+    const html = msgs.map(cipher => {
+      try{
+        const bytes = CryptoJS.AES.decrypt(cipher, window.DECRYPT_KEY);
+        const plain = bytes.toString(CryptoJS.enc.Utf8);
+        if(!plain) return "";
+        const m = JSON.parse(plain);
+        return `<div class="${m.nick===nick?'me':'other'}">
+          <small style="color:#aaa;">${m.nick} ${m.time}</small>
+          <div>${m.text.replace(/\n/g,'<br>')}</div>
+        </div>`;
+      }catch(e){ return "<small style='color:#f66;'>[解密失敗]</small>" }
+    }).join("");
+    document.getElementById("msg").innerHTML = html;
+    document.getElementById("msg").scrollTop = 1e9;
+    document.getElementById("online").textContent = new Set(msgs.map(cipher=>{
+      try{
+        const p = CryptoJS.AES.decrypt(cipher, window.DECRYPT_KEY).toString(CryptoJS.enc.Utf8);
+        return JSON.parse(p).nick;
+      }catch(e){return ""}
+    })).size;
+  }catch(e){}
 }
 
-// ==== 送出訊息 ====
-async function sendMessage() {
-  const input = document.getElementById("msgInput");
-  const text = input.value.trim();
-  if (!text) return;
-  
-  try {
-    // 先下載現有 record.json
-    let fileData = { public: [], gay: [], lesbian: [] };
-    for (let c of cities) fileData["city_"+c] = [];
-    
-    try {
-      const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${FILE_PATH}`, {
-        headers: { Authorization: `token ${GITHUB_TOKEN}` }
-      });
-      const data = await res.json();
-      Object.assign(fileData, JSON.parse(atob(data.content)));
-    } catch(e) {}
+async function send(){
+  const text = document.getElementById("input").value.trim();
+  if(!text) return;
+  const plain = JSON.stringify({
+    nick,
+    text,
+    time: new Date().toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})
+  });
 
-    // 加入新訊息
-    const msg = {
-      nick: window.nickname,
-      text,
-      time: new Date().toLocaleString('zh-TW').slice(5, -3) // 去掉年份與秒
-    };
-    
-    if (!fileData[window.currentRoom]) fileData[window.currentRoom] = [];
-    fileData[window.currentRoom].push(msg);
-    
-    // 限制每房最多 500 筆（避免檔案太大）
-    if (fileData[window.currentRoom].length > 500) {
-      fileData[window.currentRoom] = fileData[window.currentRoom].slice(-500);
-    }
-
-    // 上傳回去
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(fileData, null, 2))));
-    
-    await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${FILE_PATH}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `token ${GITHUB_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: "update chat record",
-        content: content,
-        sha: (await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${FILE_PATH}`, {
-          headers: { Authorization: `token ${GITHUB_TOKEN}` }
-        }).then(r=>r.json()).catch(()=>null))?.sha || undefined
-      })
-    });
-    
-    input.value = "";
-    loadMessages();
-  } catch(e) {
-    alert("送出失敗，請確認網路或 Token 權限");
-  }
+  await fetch("https://api.github.com/repos/datemode/datemode.github.io/dispatches",{
+    method:"POST",
+    headers:{
+      "Accept":"application/vnd.github.v3+json",
+      "Authorization":"token "+atob("Z2hwX2d0MWdBWExMS1lXVzd6MlFTVXNJQThxYjd6STFBMkxkZHI4")
+    },
+    body:JSON.stringify({
+      "event_type":"chat-update",
+      "client_payload":{room, plain}
+    })
+  });
+  document.getElementById("input").value="";
+  setTimeout(load, 800);
 }
 
-// ==== 頁面載入時檢查是否有記住的暱稱 ====
-window.onload = () => {
-  const saved = localStorage.getItem("chat_nickname");
-  if (saved) document.getElementById("nickname").value = saved;
-};
+// Enter 送出
+document.getElementById("input")?.addEventListener("keydown", e=>{
+  if(e.key==="Enter" && !e.shiftKey){
+    e.preventDefault();
+    send();
+  }
+});
+
+// 記住暱稱
+if(localStorage.nick) document.getElementById("nick").value = localStorage.nick;
+document.getElementById("nick").addEventListener("change",()=>localStorage.nick=document.getElementById("nick").value);
 </script>
-
 </body>
 </html>
