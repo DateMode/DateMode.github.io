@@ -5,70 +5,74 @@
 <title>DM｜DateMode 台灣最大匿名交友</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://accounts.google.com/gsi/client" async></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
-  :root{--p:#d8b4fe;--ph:#faf5ff;--bg:#0d071a;--card:#1e0d3d;--text:#e9d5ff;}
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Microsoft JhengHei',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(circle at 30% 70%, #2d1b69, #0d071a);}
-  
-  header{background:linear-gradient(135deg,#2d1b69,#1e0d3d);padding:1.2rem;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.7);}
-  h1{font-size:1.8rem;background:linear-gradient(90deg,#c084fc,#e0aaff,#f0abfc);-webkit-background-clip:text;background-clip:text;color:transparent;}
-  
-  #messages{flex:1;overflow-y:auto;padding:1.2rem;display:flex;flex-direction:column;gap:14px;}
-  .msg{max-width:80%;word-wrap:break-word;align-self:flex-start;}
-  .msg.own{align-self:flex-end;}
-  .bubble{background:var(--card);padding:15px 20px;border-radius:24px;position:relative;box-shadow:0 6px 20px rgba(0,0,0,.5);border:1px solid #4c1d95;}
-  .msg.own .bubble{background:linear-gradient(135deg,var(--p),#c084fc);color:#000;border-bottom-right-radius:6px;}
-  .msg.other .bubble{border-bottom-left-radius:6px;}
-  .head{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
-  .avatar{width:40px;height:40px;border-radius:50%;border:2px solid var(--p);object-fit:cover;}
-  .info{font-size:0.85rem;color:#aaa;margin-top:8px;}
-  .info span{color:var(--ph);font-weight:600;}
-  
-  footer{background:var(--card);padding:1rem;border-top:2px solid var(--p);box-shadow:0 -10px 30px rgba(0,0,0,.6);}
-  .input-area{display:flex;align-items:end;gap:14px;}
-  textarea{flex:1;min-height:60px;max-height:170px;padding:18px;border-radius:24px;background:#2d1b69;border:1px solid var(--p);color:white;font-size:1.1rem;resize:none;}
-  textarea:focus{outline:none;background:#3d2a8e;}
-  button{background:var(--p);border:none;width:62px;height:62px;border-radius:50%;font-size:1.7rem;color:#000;cursor:pointer;shadow:0 8px 25px rgba(216,180,254,.6);transition:.3s;}
-  button:hover{transform:scale(1.12);}
-  
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.98);display:flex;align-items:center;justify-content:center;z-index:999;}
-  .mb{background:var(--card);padding:2.8rem;border-radius:28px;border:2px solid var(--p);max-width:92%;box-shadow:0 0 80px rgba(216,180,254,.5);}
-  .grid{display:grid;gap:16px;margin-top:25px;}
-  .ip-box{background:#2d1b69;padding:12px;border-radius:12px;margin:15px 0;text-align:center;font-size:1rem;border:1px solid var(--p);}
-  .hidden{display:none !important;}
+  :root {
+    --primary: #d8b4fe;
+    --primary-hover: #c084fc;
+    --bg: #0d071a;
+    --card: #1e0d3d;
+    --text: #e9d5ff;
+    --muted: #94a3b8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Microsoft JhengHei', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: radial-gradient(circle at 30% 70%, #2d1b69, var(--bg)); }
+  header { background: linear-gradient(135deg, #2d1b69, #1e0d3d); padding: 1.2rem; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.7); }
+  h1 { font-size: 1.8rem; background: linear-gradient(90deg, var(--primary), #e0aaff, #f0abfc); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  #messages { flex: 1; overflow-y: auto; padding: 1.2rem; display: flex; flex-direction: column; gap: 14px; }
+  .msg { max-width: 80%; word-wrap: break-word; align-self: flex-start; }
+  .msg.own { align-self: flex-end; }
+  .bubble { background: var(--card); padding: 15px 20px; border-radius: 24px; position: relative; box-shadow: 0 6px 20px rgba(0,0,0,0.5); border: 1px solid #4c1d95; }
+  .msg.own .bubble { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: #000; border-bottom-right-radius: 6px; }
+  .msg.other .bubble { border-bottom-left-radius: 6px; }
+  .head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; }
+  .info { font-size: 0.85rem; color: var(--muted); margin-top: 8px; }
+  .info span { color: #faf5ff; font-weight: 600; }
+  footer { background: var(--card); padding: 1rem; border-top: 2px solid var(--primary); box-shadow: 0 -10px 30px rgba(0,0,0,0.6); }
+  .input-area { display: flex; align-items: end; gap: 14px; }
+  textarea { flex: 1; min-height: 60px; max-height: 170px; padding: 18px; border-radius: 24px; background: #2d1b69; border: 1px solid var(--primary); color: white; font-size: 1.1rem; resize: none; }
+  textarea:focus { outline: none; background: #3d2a8e; }
+  button { background: var(--primary); border: none; width: 62px; height: 62px; border-radius: 50%; font-size: 1.7rem; color: #000; cursor: pointer; box-shadow: 0 8px 25px rgba(216,180,254,0.6); transition: 0.3s; }
+  button:hover { transform: scale(1.12); }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: flex; align-items: center; justify-content: center; z-index: 999; }
+  .mb { background: var(--card); padding: 2.8rem; border-radius: 28px; border: 2px solid var(--primary); max-width: 92%; box-shadow: 0 0 80px rgba(216,180,254,0.5); }
+  .grid { display: grid; gap: 16px; margin-top: 25px; grid-template-columns: 1fr 1fr; }
+  .ip-box { background: #2d1b69; padding: 12px; border-radius: 12px; margin: 15px 0; text-align: center; font-size: 1rem; border: 1px solid var(--primary); }
+  .hidden { display: none !important; }
+  .error { color: #ff6b6b; margin: 10px 0; height: 20px; text-align: center; }
 </style>
 </head>
 <body>
 
-<!-- 18禁合約 -->
+<!-- 18禁合約彈窗 -->
 <div class="modal">
   <div class="mb">
-    <h2 style="color:#ff6b6b;text-align:center;margin-bottom:1.5rem;">DM｜DateMode 使用條款（滿18歲）</h2>
-    <div style="line-height:2;font-size:1.05rem;">
+    <h2 style="color: #ff6b6b; text-align: center; margin-bottom: 1.5rem;">DM｜DateMode 使用條款（滿18歲）</h2>
+    <div style="line-height: 2; font-size: 1.05rem;">
       <ul>
         <li>本平台僅限 <strong>滿18歲</strong> 成年人士使用</li>
         <li>嚴禁援交、金錢交易、約砲廣告</li>
         <li>禁止散布違法內容、騷擾他人</li>
         <li>一切言論由使用者自行負責</li>
       </ul>
-      <p style="color:#ff6b6b;font-weight:bold;margin-top:1.5rem;">按下同意即表示您已滿18歲並接受以上條款</p>
+      <p style="color: #ff6b6b; font-weight: bold; margin-top: 1.5rem;">按下同意即表示您已滿18歲並接受以上條款</p>
     </div>
-    <button onclick="document.querySelector('.modal').remove();showLogin()" style="background:#10b981;width:100%;padding:16px;margin-top:20px;border-radius:18px;font-size:1.1rem;">我已滿18歲，同意並進入</button>
+    <button onclick="document.querySelector('.modal').remove(); showLogin()" style="background: #10b981; width: 100%; padding: 16px; margin-top: 20px; border-radius: 18px; font-size: 1.1rem;">我已滿18歲，同意並進入</button>
   </div>
 </div>
 
 <!-- 登入頁面 -->
-<div id="login" class="hidden" style="padding:2rem;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;">
+<div id="login" class="hidden" style="padding: 2rem; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center;">
   <h1>DM｜DateMode</h1>
-  <p style="margin:1.5rem 0;color:#94a3b8;font-size:1.1rem;">台灣最安全匿名交友平台</p>
+  <p style="margin: 1.5rem 0; color: var(--muted); font-size: 1.1rem;">台灣最安全匿名交友平台</p>
   
   <div class="ip-box" id="ipInfo">正在取得您的位置…</div>
   
-  <div id="googleBtn" style="margin:20px auto;"></div>
+  <div id="googleBtn" style="margin: 20px auto; width: 300px;"></div>
   
-  <input type="text" id="nick" placeholder="輸入暱稱（最多10字）" maxlength="10" style="text-align:center;margin:15px 0;">
-  <p id="error" style="color:#ff6b6b;margin:10px 0;height:20px;"></p>
+  <input type="text" id="nick" placeholder="輸入暱稱（最多10字）" maxlength="10" style="text-align: center; margin: 15px 0;">
+  <p id="error" class="error"></p>
   
   <div class="grid">
     <button onclick="enter('short')">短期約會</button>
@@ -76,17 +80,17 @@
     <button onclick="enter('group')">多人聯誼</button>
     <button onclick="enter('gay')">男同志</button>
     <button onclick="enter('lesbian')">女同志</button>
-    <button onclick="showCities()">依地區選擇</button>
+    <button onclick="showCities()">依地區</button>
   </div>
   
-  <select id="citySelect" class="hidden" style="margin-top:15px;padding:14px;border-radius:14px;background:#2d1b69;color:white;">
+  <select id="citySelect" class="hidden" style="margin-top: 15px; padding: 14px; border-radius: 14px; background: #2d1b69; color: white; border: 1px solid var(--primary);">
     <option value="">選擇縣市…</option>
-    <option>台北市</option><option>新北市</option><option>桃園市</option><option>台中市</option><option>台南市</option><option>高雄市</option>
-    <option>基隆市</option><option>新竹市</option><option>嘉義市</option><option>新竹縣</option><option>苗栗縣</option><option>彰化縣</option>
-    <option>南投縣</option><option>雲林縣</option><option>嘉義縣</option><option>屏東縣</option><option>宜蘭縣</option><option>花蓮縣</option>
-    <option>台東縣</option><option>澎湖縣</option><option>金門縣</option><option>連江縣</option>
+    <option value="台北市">台北市</option><option value="新北市">新北市</option><option value="桃園市">桃園市</option><option value="台中市">台中市</option><option value="台南市">台南市</option><option value="高雄市">高雄市</option>
+    <option value="基隆市">基隆市</option><option value="新竹市">新竹市</option><option value="嘉義市">嘉義市</option><option value="新竹縣">新竹縣</option><option value="苗栗縣">苗栗縣</option><option value="彰化縣">彰化縣</option>
+    <option value="南投縣">南投縣</option><option value="雲林縣">雲林縣</option><option value="嘉義縣">嘉義縣</option><option value="屏東縣">屏東縣</option><option value="宜蘭縣">宜蘭縣</option><option value="花蓮縣">花蓮縣</option>
+    <option value="台東縣">台東縣</option><option value="澎湖縣">澎湖縣</option><option value="金門縣">金門縣</option><option value="連江縣">連江縣</option>
   </select>
-  <button id="cityBtn" class="hidden" onclick="enterCity()" style="margin-top:15px;">進入縣市聊天室</button>
+  <button id="cityBtn" class="hidden" onclick="enterCity()" style="margin-top: 15px;">進入縣市聊天室</button>
 </div>
 
 <!-- 聊天主畫面 -->
@@ -95,121 +99,144 @@
 <footer id="footer" class="hidden">
   <div class="input-area">
     <textarea id="input" placeholder="說點什麼…（Enter送出）"></textarea>
-    <button onclick="send()">Send</button>
+    <button onclick="send()"><i class="fas fa-paper-plane"></i></button>
   </div>
 </footer>
 
 <script>
-// 我已幫你部署好永久免費中繼站（MySQL 完全接通，帳密永不外洩）
-const API = "https://dm-chat.deno.dev";
+// 替換成你的 PHP 網址，例如：https://yourdomain.infinityfreeapp.com
+const API_BASE = "https://123gocorp.com/";  // 改成你的 InfinityFree 域名
 
 let room = "", nick = "匿名", googleUser = null, ip = "", city = "未知地區";
 
 // 取得 IP 與縣市
-async function getLocation(){
-  try{
-    const r = await fetch("https://api.ipify.org?format=json");
-    const {ip:ipAddr} = await r.json();
+async function getLocation() {
+  try {
+    const r = await fetch(`${API_BASE}/get_ip.php`);
+    const {ip: ipAddr} = await r.json();
     ip = ipAddr;
     const r2 = await fetch(`https://ipapi.co/${ip}/json/`);
     const d = await r2.json();
-    city = d.country_name==="Taiwan" ? (d.region || "台灣某地") : "國外";
+    city = d.country_name === "Taiwan" ? (d.region || "台灣某地") : "國外";
     document.getElementById("ipInfo").innerHTML = `
-      <i class="fas fa-map-marker-alt"></i> 您的位置：<br>
+      <i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> 您的位置：<br>
       <strong>IP：${ip}</strong><br>
       <strong>地區：${city}</strong>
     `;
-  }catch(e){
-    document.getElementById("ipInfo").textContent = "無法取得位置";
+  } catch (e) {
+    document.getElementById("ipInfo").textContent = "無法取得位置資訊";
   }
 }
 
-function showLogin(){
+function showLogin() {
   getLocation();
-  // Google 登入按鈕
+  // Google 登入
   google.accounts.id.initialize({
-    client_id: "1039614426685-4v0g4u1g5p8f0b8gq8v8gq8v8gq8v8gq.apps.googleusercontent.com",
-    callback: r=>{
-      const d = JSON.parse(atob(r.credential.split('.')[1]));
-      googleUser = d;
-      nick = d.name;
+    client_id: "你的 Google Client ID.apps.googleusercontent.com",  // 去 Google Console 申請，5 分鐘搞定
+    callback: (response) => {
+      const payload = JSON.parse(atob(response.credential.split('.')[1]));
+      googleUser = payload;
+      nick = payload.name;
       document.getElementById("nick").value = nick;
     }
   });
-  google.accounts.id.renderButton(document.getElementById("googleBtn"), {theme:"outline", size:"large", text:"signin_with", shape:"pill"});
+  google.accounts.id.renderButton(document.getElementById("googleBtn"), { theme: "outline", size: "large", text: "signin_with", shape: "pill" });
   document.getElementById("login").classList.remove("hidden");
 }
 
-function showCities(){
+function showCities() {
   document.getElementById("citySelect").classList.remove("hidden");
   document.getElementById("cityBtn").classList.remove("hidden");
+  document.querySelectorAll('.grid button').forEach(btn => btn.style.display = 'none');
 }
 
-function enter(r){
+function enter(r) {
   const inputNick = document.getElementById("nick").value.trim();
-  if(!inputNick && !googleUser){
-    document.getElementById("error").textContent = "請輸入暱稱或使用 Google 登入";
+  if (!inputNick && !googleUser) {
+    document.getElementById("error").textContent = "請輸入暱稱或使用 Google 登入！";
     return;
   }
-  nick = googleUser?.name || inputNick;
-  room = r.startsWith("city_") ? r : r;
-  if(r==="taiwan"){
-    const city = document.getElementById("citySelect").value;
-    if(!city) return document.getElementById("error").textContent = "請選擇縣市";
-    room = "city_" + city;
+  nick = googleUser ? googleUser.name : inputNick;
+  if (nick.length > 10) {
+    document.getElementById("error").textContent = "暱稱最多10字！";
+    return;
   }
-  
+  room = r;
+  document.getElementById("error").textContent = "";
   localStorage.setItem("dm_nick", nick);
   document.getElementById("login").classList.add("hidden");
   document.getElementById("header").classList.remove("hidden");
   document.getElementById("footer").classList.remove("hidden");
   document.getElementById("roomTitle").textContent = {
-    short:"短期約會", long:"長期約會", group:"多人聯誼", gay:"男同志", lesbian:"女同志"
-  }[r] || room.replace("city_","")+"聊天室";
-  
+    short: "短期約會", long: "長期約會", group: "多人聯誼", gay: "男同志", lesbian: "女同志"
+  }[r] || room.replace("city_", "") + "聊天室";
   load();
   setInterval(load, 4000);
 }
 
-async function load(){
-  const res = await fetch(`${API}/messages?room=${room}`);
-  const msgs = await res.json();
-  document.getElementById("messages").innerHTML = msgs.map(m=>`
-    <div class="msg ${m.nickname===nick?'own':''}">
-      <div class="head">
-        ${m.avatar?`<img src="${m.avatar}" class="avatar">`:`<div class="avatar" style="background:#7e57c2;display:grid;place-items:center;color:white;font-weight:bold;font-size:1.2rem;">${m.nickname[0]}</div>`}
-        <div>
-          <div class="bubble">${m.message.replace(/\n/g,'<br>')}</div>
-          <div class="info">
-            ${m.nickname} <span>${m.city}</span> · ${new Date(m.created_at).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})}
+function enterCity() {
+  const selectedCity = document.getElementById("citySelect").value;
+  if (!selectedCity) {
+    document.getElementById("error").textContent = "請選擇縣市！";
+    return;
+  }
+  room = "city_" + selectedCity;
+  enter("city_" + selectedCity);  // 觸發進入
+}
+
+async function load() {
+  try {
+    const res = await fetch(`${API_BASE}/api.php?action=messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ room })
+    });
+    const msgs = await res.json();
+    document.getElementById("messages").innerHTML = msgs.map(m => `
+      <div class="msg ${m.nickname === nick ? 'own' : ''}">
+        <div class="head">
+          ${m.avatar ? `<img src="${m.avatar}" class="avatar" alt="${m.nickname}">` : `<div class="avatar" style="background: #7e57c2; display: grid; place-items: center; color: white; font-weight: bold; font-size: 1.2rem;">${m.nickname.charAt(0)}</div>`}
+          <div>
+            <div class="bubble">${m.message.replace(/\n/g, '<br>')}</div>
+            <div class="info">${m.nickname} <span>${m.city}</span> · ${new Date(m.created_at).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}</div>
           </div>
         </div>
       </div>
-    </div>`).join("");
-  document.getElementById("messages").scrollTop = 1e9;
+    `).join("");
+    document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+  } catch (e) {
+    console.error("載入失敗:", e);
+  }
 }
 
-async function send(){
-  const t = document.getElementById("input").value.trim();
-  if(!t) return;
-  await fetch(API+"/send",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({room, nickname:nick, message:t, googleUser, ip, city})
-  });
-  document.getElementById("input").value="";
-  load();
+async function send() {
+  const text = document.getElementById("input").value.trim();
+  if (!text) return;
+  try {
+    await fetch(`${API_BASE}/api.php?action=send`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ room, nickname: nick, message: text, googleUser, ip, city })
+    });
+    document.getElementById("input").value = "";
+    load();
+  } catch (e) {
+    alert("送出失敗，請重試");
+  }
 }
 
 // Enter 送出
-document.addEventListener("keydown",e=>{
-  if(e.key==="Enter" && !e.shiftKey && document.getElementById("input")){
-    e.preventDefault();send();
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey && document.getElementById("input")) {
+    e.preventDefault();
+    send();
   }
 });
 
 // 記住暱稱
-if(localStorage.dm_nick) document.getElementById("nick").value = localStorage.dm_nick;
+if (localStorage.getItem("dm_nick")) {
+  document.getElementById("nick").value = localStorage.getItem("dm_nick");
+}
 </script>
 </body>
 </html>
