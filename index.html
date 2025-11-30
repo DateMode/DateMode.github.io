@@ -10,7 +10,7 @@
   :root{
     --p:#c084fc;--ph:#e9d5ff;--bg:#0a0619;--card:#1a0f38;--glass:rgba(30,15,56,0.65);
     --text:#e0d0ff;--muted:#b19cd9;--glow:rgba(192,132,252,0.4);
-    /* 新增性別顏色 */
+    /* 性別顏色 */
     --male:#3b82f6; 
     --female:#f472b6;
   }
@@ -63,7 +63,7 @@
     width:100%;max-width:380px;padding:16px;border-radius:20px;
     background:rgba(45,27,105,0.6);border:1px solid var(--p);
     text-align:center;margin:20px 0 10px;font-size:1.1rem;
-    color: white; /* 修正字體顏色 */
+    color: white; 
   }
   #nick::placeholder {
       color: rgba(255, 255, 255, 0.6);
@@ -114,14 +114,14 @@
   .room-btn{
     background:linear-gradient(135deg,rgba(192,132,252,0.22),rgba(224,170,255,0.12));
     border:1px solid rgba(192,132,252,0.6);
-    color:white;padding:18px 12px; /* 調整 padding 避免文字跑掉 */
+    color:white;padding:18px 12px; 
     border-radius:26px;
-    font-size:1.05rem; /* 略微縮小字體 */
-    font-weight:600;letter-spacing:1px; /* 略微縮小字距 */
+    font-size:1.05rem; 
+    font-weight:600;letter-spacing:1px; 
     transition:all .4s ease;box-shadow:0 10px 30px rgba(0,0,0,0.5);
     backdrop-filter:blur(12px);
     cursor: pointer;
-    text-align: center; /* 確保文字居中 */
+    text-align: center; 
   }
   .room-btn:hover{
     transform:translateY(-10px) scale(1.03);
@@ -158,12 +158,13 @@
 
   /* 右側訪客列表 */
   #usersList {
-      width: 200px; /* 固定寬度 */
+      width: 200px; 
       background: var(--card);
       padding: 1.5rem;
       overflow-y: auto;
       box-shadow: -5px 0 20px rgba(0,0,0,0.5);
       backdrop-filter: blur(8px);
+      flex-shrink: 0; 
   }
   #usersList h3 {
       font-size: 1.2rem;
@@ -188,16 +189,17 @@
       height: 8px;
       border-radius: 50%;
       background: #10b981;
+      flex-shrink: 0;
   }
-  .user-gender-male { color: var(--male); }
-  .user-gender-female { color: var(--female); }
+  .user-gender-male { color: var(--male); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .user-gender-female { color: var(--female); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 
   /* 聊天室 Header */
   header{
     background:var(--card);padding:1.1rem;text-align:center;position:relative;
     box-shadow:0 12px 35px rgba(0,0,0,0.7);backdrop-filter:blur(10px);
-    padding-bottom: 0.5rem; /* 為新的使用者資訊留空間 */
+    padding-bottom: 0.5rem; 
   }
   #roomTitle{
     font-size:1.75rem;background:linear-gradient(90deg,#c084fc,#e0aaff);
@@ -210,13 +212,15 @@
       font-size: 0.9rem;
       color: var(--muted);
       padding: 0 20px;
+      text-align: left;
   }
   #userInfo strong {
       color: var(--text);
+      margin-right: 15px;
   }
 
   #online{
-    position:absolute;right:16px;top:50%;transform:translateY(-50%);
+    position:absolute;right:16px;top:20px;
     background:rgba(192,132,252,0.35);padding:7px 16px;border-radius:30px;font-size:0.95rem;
   }
   
@@ -252,6 +256,7 @@
   footer{
     background:var(--card);padding:1.2rem;border-top:2px solid var(--p));
     box-shadow:0 -12px 40px rgba(0,0,0,0.7);
+    flex-shrink: 0;
   }
   .input-area{display:flex;align-items:end;gap:14px;}
   textarea{
@@ -267,7 +272,7 @@
   }
   button:hover{transform:scale(1.15);}
   .private-toggle{
-    position:absolute;right:16px;top:50%;transform:translateY(-50%);
+    position:absolute;right:16px;bottom:10px;
     background:rgba(0,0,0,0.5);padding:8px 16px;border-radius:30px;
     font-size:0.95rem;display:flex;align-items:center;gap:8px;
     backdrop-filter:blur(8px);
@@ -368,24 +373,19 @@
 
 
 <script>
-const API = "https://123gocorp.com";
+// ⭐ 請確保您的 API 網址是正確且可存取的
+const API = "https://123gocorp.com/api.php"; 
 
 let room = "", nick = "匿名", googleUser = null, ip = "", city = "未知地區";
-let gender = null; // 新增性別變數
+let gender = null; 
 let lastMessageId = 0;
-let lastSeenTime = new Date().toLocaleTimeString('zh-TW'); // 用於顯示使用者上線時間
+let lastSeenTime = new Date().toLocaleTimeString('zh-TW');
 
-// ----------------------------------------------------
-// 格式化時間
-// ----------------------------------------------------
 function formatTime(dateString) {
     const date = new Date(dateString);
     return date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
 }
 
-// ----------------------------------------------------
-// 取得 IP / 位置 資訊
-// ----------------------------------------------------
 async function getLocation(){
   try{
     const r = await fetch("https://api.ipify.org?format=json");
@@ -403,9 +403,6 @@ async function getLocation(){
   }
 }
 
-// ----------------------------------------------------
-// 登入介面顯示與 Google 登入初始化
-// ----------------------------------------------------
 function showLogin(){
   getLocation();
   google.accounts.id.initialize({
@@ -425,9 +422,6 @@ function showCities(){
   document.getElementById("citySelect").classList.remove("hidden");
 }
 
-// ----------------------------------------------------
-// 進入聊天室
-// ----------------------------------------------------
 function enter(r){
   const inputNick = document.getElementById("nick").value.trim();
   const selectedGender = document.querySelector('input[name="gender"]:checked');
@@ -442,7 +436,7 @@ function enter(r){
   }
   
   nick = (googleUser?.name || inputNick).slice(0,10);
-  gender = selectedGender.value; // 獲取選擇的性別
+  gender = selectedGender.value; 
   
   if(r==="city"){
     const c = document.getElementById("citySelect").value;
@@ -456,9 +450,8 @@ function enter(r){
   }
   
   localStorage.setItem("dm_nick", nick);
-  localStorage.setItem("dm_gender", gender); // 儲存性別
+  localStorage.setItem("dm_gender", gender); 
 
-  // 顯示使用者自己的資訊
   lastSeenTime = new Date().toLocaleTimeString('zh-TW');
   document.getElementById("userNickDisplay").textContent = nick + (gender === 'male' ? ' (♂)' : ' (♀)');
   document.getElementById("userIPDisplay").textContent = ip;
@@ -467,38 +460,28 @@ function enter(r){
   document.getElementById("login").classList.add("hidden");
   document.getElementById("chat-container").classList.remove("hidden");
   
-  // 開始載入訊息和訪客列表
   load();
   setInterval(load, 3500);
 }
 
-// ----------------------------------------------------
-// 訪客列表渲染
-// ----------------------------------------------------
 function renderUsersList(users) {
     const userList = document.getElementById("onlineUsers");
     const userCount = document.getElementById("userCount");
     
-    // 這裡我們假設後端返回的 users 陣列中每個物件有 nickname 和 gender 屬性
-    
-    // 為了演示，我們使用一個模擬的訪客列表 (您需要根據您的 PHP 後端實際返回的資料來調整)
-    let uniqueUsers = {};
-    users.forEach(msg => {
-        if (!uniqueUsers[msg.nickname]) {
-            uniqueUsers[msg.nickname] = { 
-                nickname: msg.nickname, 
-                gender: msg.gender || (Math.random() > 0.5 ? 'male' : 'female') 
-            };
-        }
-    });
+    if (!users || users.length === 0) {
+        userCount.textContent = 0;
+        userList.innerHTML = '<li>目前沒有其他訪客。</li>';
+        return;
+    }
 
-    const finalUsers = Object.values(uniqueUsers);
-    finalUsers.sort((a, b) => a.nickname.localeCompare(b.nickname, 'zh-TW')); // 按暱稱排序
+    const finalUsers = users;
+    finalUsers.sort((a, b) => a.nickname.localeCompare(b.nickname, 'zh-TW'));
     
     userCount.textContent = finalUsers.length;
     userList.innerHTML = finalUsers.map(user => {
-        const genderClass = user.gender === 'male' ? 'user-gender-male' : 'user-gender-female';
-        const genderIcon = user.gender === 'male' ? 'fas fa-mars' : 'fas fa-venus';
+        const userGender = user.gender || 'unknown';
+        const genderClass = userGender === 'male' ? 'user-gender-male' : 'user-gender-female';
+        const genderIcon = userGender === 'male' ? 'fas fa-mars' : 'fas fa-venus';
         const isSelf = user.nickname === nick;
 
         return `
@@ -513,15 +496,9 @@ function renderUsersList(users) {
     }).join('');
 }
 
-// ----------------------------------------------------
-// 訊息渲染
-// ----------------------------------------------------
 function renderMessage(msg) {
     const isOwn = msg.nickname === nick;
-    
-    // 由於後端 PHP 程式碼被省略，我們**假設**後端返回的訊息物件 (msg) 中包含 `gender` 屬性。
-    // 如果後端不返回，你需要修改後端 `messages` 查詢，將性別 (gender) 加入。
-    const msgGender = msg.gender || (isOwn ? gender : (Math.random() > 0.5 ? 'male' : 'female')); 
+    const msgGender = msg.gender || gender; 
     
     const avatar = msg.avatar || 'https://via.placeholder.com/150/808080/FFFFFF?text=DM';
     let avatarStyle = '';
@@ -540,8 +517,8 @@ function renderMessage(msg) {
             <div class="bubble">
                 ${msg.message.replace(/\n/g, '<br>')}
                 <div class="info">
-                    <span>${formatTime(msg.created_at)}</span> 
-                    - ${msg.city}
+                    <span>${formatTime(msg.created_at || new Date())}</span> 
+                    - ${msg.city || '未知地區'}
                 </div>
             </div>
         </div>
@@ -549,48 +526,51 @@ function renderMessage(msg) {
     return html;
 }
 
-// ----------------------------------------------------
-// 載入訊息
-// ----------------------------------------------------
 async function load() {
     try {
         const response = await fetch(`${API}?action=messages`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ room, nickname: nick })
+            body: JSON.stringify({ room, nickname: nick }) 
         });
-        const messages = await response.json();
         
-        if (messages.error) {
-            console.error('後端錯誤:', messages.error);
+        const data = await response.json();
+        
+        if (data.error) {
+            console.error('後端錯誤:', data.error);
             return;
         }
+
+        const messages = data.messages || [];
+        const onlineUsers = data.users || []; 
 
         const msgsContainer = document.getElementById("messages");
         
         if (messages.length > 0) {
-            // 更新訪客列表
-            renderUsersList(messages); 
+            renderUsersList(onlineUsers); 
             
-            // 檢查是否有新訊息
-            if (messages[messages.length - 1].id !== lastMessageId) {
+            // 由於沒有資料庫 ID，我們使用最後一條訊息的創建時間戳作為 ID 檢查點
+            const currentLastId = messages[messages.length - 1].created_at_ts || messages[messages.length - 1].id; 
+            
+            if (currentLastId !== lastMessageId) {
                 msgsContainer.innerHTML = messages.map(renderMessage).join('');
-                lastMessageId = messages[messages.length - 1].id;
+                lastMessageId = currentLastId;
                 msgsContainer.scrollTop = msgsContainer.scrollHeight; 
             }
+        } else {
+             renderUsersList(onlineUsers); 
+             msgsContainer.innerHTML = '<div style="text-align:center; color:var(--muted); margin-top:50px;">目前沒有訊息，快來打個招呼吧！</div>';
+             lastMessageId = 0;
         }
         
-        // 更新在線人數顯示
         document.getElementById("online").textContent = `${document.getElementById("userCount").textContent} 人`; 
 
     } catch (e) {
         console.error("載入訊息失敗:", e);
+        document.getElementById("messages").innerHTML = '<div style="text-align:center; color:#ff6b6b; margin-top:50px;">連線到代理服務器失敗，請檢查 API 路徑是否正確。</div>';
     }
 }
 
-// ----------------------------------------------------
-// 發送訊息
-// ----------------------------------------------------
 async function send() {
     const inputField = document.getElementById("input");
     const message = inputField.value.trim();
@@ -603,7 +583,7 @@ async function send() {
             body: JSON.stringify({
                 room,
                 nickname: nick,
-                gender, // 傳送性別給後端儲存
+                gender, 
                 message: message,
                 googleUser,
                 ip,
@@ -612,23 +592,21 @@ async function send() {
         });
 
         const result = await response.json();
+        
         if (result.success) {
             inputField.value = '';
-            load(); 
+            setTimeout(load, 500); 
         } else {
-            alert("發送失敗，請稍後再試！");
+            alert(`發送失敗，請檢查代理 API 回傳錯誤: ${result.error || '未知錯誤'}`);
         }
 
     } catch (e) {
         console.error("發送訊息失敗:", e);
-        alert("網路錯誤或後端連線中斷。");
+        alert("網路錯誤或代理 API 連線中斷。");
     }
 }
 
 
-// ----------------------------------------------------
-// 事件監聽 (Enter 送出)
-// ----------------------------------------------------
 document.addEventListener("keydown",e=>{
     const inputField = document.getElementById("input");
     if(e.key==="Enter" && !e.shiftKey && inputField && document.getElementById("chat-container") && !document.getElementById("chat-container").classList.contains('hidden')){
@@ -637,12 +615,8 @@ document.addEventListener("keydown",e=>{
     }
 });
 
-// ----------------------------------------------------
-// 初始檢查與載入
-// ----------------------------------------------------
 if(localStorage.dm_nick) document.getElementById("nick").value=localStorage.dm_nick;
 if(localStorage.dm_gender) document.getElementById(`gender${localStorage.dm_gender.charAt(0).toUpperCase() + localStorage.dm_gender.slice(1)}`).checked = true;
-
 </script>
 </body>
 </html>
